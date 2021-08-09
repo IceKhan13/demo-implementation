@@ -13,6 +13,9 @@ jobs:
   generate_issue_report:
     runs-on: ubuntu-latest
     steps:
+      - name: Get current date
+        id: date
+        run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
       - name: Checkout base code
         uses: actions/checkout@v2
         with:
@@ -30,9 +33,7 @@ jobs:
           echo "# WIKI page ${{ steps.date.outputs.date }}" >> wiki_page_1_${{ steps.date.outputs.date }}.md
           git add .
           git diff-index --quiet HEAD || git commit -m "Add changes" && git push
-#      - name: Get current date
-#        id: date
-#        run: echo "::set-output name=date::$(date +'%Y-%m-%d_%H_%M')"
+
 #      - name: Check vars
 #        run: printenv
 #      - uses: actions/checkout@v2
