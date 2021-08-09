@@ -16,7 +16,7 @@ jobs:
       - name: Checkout base code
         uses: actions/checkout@v2
         with:
-          path: code
+          path: base-code
       - name: Checkout wiki code
         uses: actions/checkout@v2
         with:
