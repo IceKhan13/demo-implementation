@@ -30,9 +30,25 @@ jobs:
           mkdir reports
           cd reports
           echo "# WIKI page ${{ steps.date.outputs.date }}" >> wiki_page_1_${{ steps.date.outputs.date }}.md
-      - name: Upload Report to Wiki
-        uses: SwiftDocOrg/github-wiki-publish-action@v1
-        with:
-          path: "reports"
-        env:
-          GH_PERSONAL_ACCESS_TOKEN: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
+      - name: Upload to wiki
+        run: |
+          echo "::add-mask::${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}"
+          GIT_REPOSITORY_URL="https://${GH_PERSONAL_ACCESS_TOKEN}@${GITHUB_SERVER_URL#https://}/$GITHUB_REPOSITORY.wiki.git"
+          mkdir ci-${{ steps.date.outputs.date }}
+          cd ci-${{ steps.date.outputs.date }}
+          git init
+          git config user.name "$GITHUB_ACTOR"
+          git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
+          git pull "$GIT_REPOSITORY_URL"
+          cp reports/wiki_page_1_${{ steps.date.outputs.date }}.md ci-${{ steps.date.outputs.date }}
+          cd ci-${{ steps.date.outputs.date }}
+          git add .
+          git commit -m "Push to wiki"
+          git push --set-upstream "$GIT_REPOSITORY_URL" main
+
+#      - name: Upload Report to Wiki
+#        uses: SwiftDocOrg/github-wiki-publish-action@v1
+#        with:
+#          path: "reports"
+#        env:
+#          GH_PERSONAL_ACCESS_TOKEN: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
