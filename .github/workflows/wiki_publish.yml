@@ -15,7 +15,7 @@ jobs:
     steps:
       - name: Get current date
         id: date
-        run: echo "::set-output name=date::$(date +'%Y-%m-%d_%H:%M')"
+        run: echo "::set-output name=date::$(date +'%Y-%m-%d_%H_%M')"
       - name: Check vars
         run: printenv | sed 's;=.*;;' | sort
       - uses: actions/checkout@v2
@@ -33,12 +33,12 @@ jobs:
       - name: Upload to wiki
         run: |
           echo "::add-mask::${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}"
-          GIT_REPOSITORY_URL="https://${GH_PERSONAL_ACCESS_TOKEN}@${GITHUB_SERVER_URL#https://}/$GITHUB_REPOSITORY.wiki.git"
+          GIT_REPOSITORY_URL="https://${{ env.GH_PERSONAL_ACCESS_TOKEN }}@${GITHUB_SERVER_URL#https://}/${{env.GITHUB_REPOSITORY}}.wiki.git"
           mkdir ci-${{ steps.date.outputs.date }}
           cd ci-${{ steps.date.outputs.date }}
           git init
-          git config user.name "$GITHUB_ACTOR"
-          git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
+          git config user.name "${{env.GITHUB_ACTOR}}"
+          git config user.email "${{env.GITHUB_ACTOR}}@users.noreply.github.com"
           git pull "$GIT_REPOSITORY_URL"
           cp reports/wiki_page_1_${{ steps.date.outputs.date }}.md ci-${{ steps.date.outputs.date }}
           cd ci-${{ steps.date.outputs.date }}
