@@ -17,7 +17,7 @@ jobs:
         id: date
         run: echo "::set-output name=date::$(date +'%Y-%m-%d_%H_%M')"
       - name: Check vars
-        run: printenv | sed 's;=.*;;' | sort
+        run: printenv
       - uses: actions/checkout@v2
       - name: Set up Python 3.9
         uses: actions/setup-python@v2
@@ -33,7 +33,7 @@ jobs:
       - name: Upload to wiki
         run: |
           echo "::add-mask::${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}"
-          GIT_REPOSITORY_URL="https://${{ env.GH_PERSONAL_ACCESS_TOKEN }}@${GITHUB_SERVER_URL#https://}/${{env.GITHUB_REPOSITORY}}.wiki.git"
+          GIT_REPOSITORY_URL="https://${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}@${GITHUB_SERVER_URL#https://}/${{env.GITHUB_REPOSITORY}}.wiki.git"
           mkdir ci-${{ steps.date.outputs.date }}
           cd ci-${{ steps.date.outputs.date }}
           git init
