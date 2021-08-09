@@ -13,38 +13,55 @@ jobs:
   generate_issue_report:
     runs-on: ubuntu-latest
     steps:
-      - name: Get current date
-        id: date
-        run: echo "::set-output name=date::$(date +'%Y-%m-%d_%H_%M')"
-      - name: Check vars
-        run: printenv
-      - uses: actions/checkout@v2
-      - name: Set up Python 3.9
-        uses: actions/setup-python@v2
+      - name: Checkout base code
+        uses: actions/checkout@v2
         with:
-          python-version: '3.9'
-      - name: Pick branch
-        run: git config --global init.defaultBranch main
-      - name: Generate wiki file
+          path: code
+      - name: Checkout wiki code
+        uses: actions/checkout@v2
+        with:
+          repository: ${{github.repository}}.wiki
+          path: markdown
+      - name: Push to wiki
         run: |
-          mkdir reports
-          cd reports
+          cd markdown
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
           echo "# WIKI page ${{ steps.date.outputs.date }}" >> wiki_page_1_${{ steps.date.outputs.date }}.md
-      - name: Upload to wiki
-        run: |
-          echo "::add-mask::${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}"
-          GIT_REPOSITORY_URL="https://${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}@${GITHUB_SERVER_URL#https://}/${{env.GITHUB_REPOSITORY}}.wiki.git"
-          mkdir ci-${{ steps.date.outputs.date }}
-          cd ci-${{ steps.date.outputs.date }}
-          git init
-          git config user.name "${{env.GITHUB_ACTOR}}"
-          git config user.email "${{env.GITHUB_ACTOR}}@users.noreply.github.com"
-          git pull "$GIT_REPOSITORY_URL"
-          cp reports/wiki_page_1_${{ steps.date.outputs.date }}.md ci-${{ steps.date.outputs.date }}
-          cd ci-${{ steps.date.outputs.date }}
           git add .
-          git commit -m "Push to wiki"
-          git push --set-upstream "$GIT_REPOSITORY_URL" main
+          git diff-index --quiet HEAD || git commit -m "Add changes" && git push
+#      - name: Get current date
+#        id: date
+#        run: echo "::set-output name=date::$(date +'%Y-%m-%d_%H_%M')"
+#      - name: Check vars
+#        run: printenv
+#      - uses: actions/checkout@v2
+#      - name: Set up Python 3.9
+#        uses: actions/setup-python@v2
+#        with:
+#          python-version: '3.9'
+#      - name: Pick branch
+#        run: git config --global init.defaultBranch main
+#      - name: Generate wiki file
+#        run: |
+#          mkdir reports
+#          cd reports
+#          echo "# WIKI page ${{ steps.date.outputs.date }}" >> wiki_page_1_${{ steps.date.outputs.date }}.md
+#      - name: Upload to wiki
+#        run: |
+#          echo "::add-mask::${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}"
+#          GIT_REPOSITORY_URL="https://${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}@${GITHUB_SERVER_URL#https://}/${{env.GITHUB_REPOSITORY}}.wiki.git"
+#          mkdir ci-${{ steps.date.outputs.date }}
+#          cd ci-${{ steps.date.outputs.date }}
+#          git init
+#          git config user.name "${{env.GITHUB_ACTOR}}"
+#          git config user.email "${{env.GITHUB_ACTOR}}@users.noreply.github.com"
+#          git pull "$GIT_REPOSITORY_URL"
+#          cp reports/wiki_page_1_${{ steps.date.outputs.date }}.md ci-${{ steps.date.outputs.date }}
+#          cd ci-${{ steps.date.outputs.date }}
+#          git add .
+#          git commit -m "Push to wiki"
+#          git push --set-upstream "$GIT_REPOSITORY_URL" main
 
 #      - name: Upload Report to Wiki
 #        uses: SwiftDocOrg/github-wiki-publish-action@v1
