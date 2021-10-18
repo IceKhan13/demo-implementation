@@ -1,0 +1,19 @@
+name: Project check workflow
+
+on:
+  repository_dispatch:
+    types: [ check_project ]
+
+jobs:
+  project_check_job:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Setup variables
+      id: vars
+      run: |
+        echo "Running check for ${{ github.event.client_payload.repo_url }}..."
+        echo "Will be commenting in ${{ github.event.client_payload.issue_id }}..."
+        echo "Will push changes to ${{ github.event.client_payload.branch_name }}..."
+    - uses: actions/checkout@v2
+      with:
+        ref: ${{ github.event.client_payload.branch_name }}
