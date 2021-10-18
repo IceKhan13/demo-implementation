@@ -15,5 +15,3 @@ jobs:
         echo "Will be commenting in ${{ github.event.client_payload.issue_id }}..."
         echo "Will push changes to ${{ github.event.client_payload.branch_name }}..."
     - uses: actions/checkout@v2
-      with:
-        ref: ${{ github.event.client_payload.branch_name }}
