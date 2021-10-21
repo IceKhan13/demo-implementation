@@ -6,7 +6,7 @@ jobs:
     name: Randomized tests
     runs-on: ubuntu-latest
     env:
-      ci: ${{ CI }}
+      ci: ${{ github.CI }}
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
