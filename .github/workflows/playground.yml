@@ -15,6 +15,7 @@ jobs:
         id: vars
         shell: bash
         run: |
+          echo "CI: ${{ env.CI }}"
           echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
       - name: Create comment
         uses: peter-evans/create-or-update-comment@v1
